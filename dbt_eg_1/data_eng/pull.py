@@ -84,7 +84,7 @@ class RecordsToInsertSQL:
         elif type(value) == float:
             return self._number_or_null(value)
 
-        return f"'{str(value)}'"
+        return "'" + str(value).replace("'", "''") + "'"
 
     def _normalize_records(self, records: List[dict]) -> List[dict]:
         normalized = pd.DataFrame(records).to_dict(orient="split")
@@ -127,3 +127,10 @@ class RecordsToInsertSQL:
             return str(value)
         
         return str(value)
+
+
+if __name__ == "__main__":
+    data = SanFranciscoBusinessData().get_data()
+    sql = RecordsToInsertSQL().to_sql(data, "sf_business_v1")
+    from postgresql import run_query
+    run_query(sql)
